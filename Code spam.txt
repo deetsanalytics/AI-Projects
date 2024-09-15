@@ -1,0 +1,56 @@
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+import streamlit as st
+import numpy as np
+
+# Load the dataset
+df = pd.read_csv("spam.csv", encoding='latin-1')
+
+# Explore the dataset
+st.title("Spam Classification Web App")
+st.write("Dataset Overview")
+st.write(df.head())
+
+# Get the feature and target columns
+X, y = make_classification(n_samples=2736, n_features=2, n_informative=2, n_redundant=0, random_state=5)
+#X = df.drop('v1', axis=1)  # features
+#y = df['v1']  # target variable
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+X_df = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(X.shape[1])])
+
+# Create a random forest classifier
+rfc = RandomForestClassifier(n_estimators=100, random_state=42)
+
+# Train the model
+rfc.fit(X_train, y_train)
+
+# Evaluate the model
+y_pred = rfc.predict(X_test)
+accuracy = metrics.accuracy_score(y_test, y_pred)
+st.write("Model Evaluation")
+st.write(f"Accuracy: {accuracy:.3f}")
+
+# Create a Streamlit web app
+st.write("Make a Prediction")
+input_features = st.text_input("Enter a message:")
+
+if st.button("Predict"):
+    # Preprocess the input message
+    input_message = [input_features]
+    
+    # Convert the input message into a numerical representation
+    # For example, you can use the length of the message and the number of words as features
+    feature_0 = len(input_message[0])  # length of the message
+    feature_1 = len(input_message[0].split())  # number of words
+    
+    input_message = pd.DataFrame([[feature_0, feature_1]], columns=X_df.columns)
+    
+    # Make a prediction
+    prediction = rfc.predict(input_message)
+st.write(f"Prediction: {'Spam' if prediction[0] == 1 else 'Not Spam'}")
