@@ -1,0 +1,5 @@
+my requirements.txt :
+streamlit
+pandas
+numpy
+nltk==306.2
