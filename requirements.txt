@@ -1,5 +1,5 @@
-my requirements.txt :
 streamlit
 pandas
 numpy
-nltk==306.2
+nltk==3.6.2
+sklearn
